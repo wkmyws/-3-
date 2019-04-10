@@ -1,0 +1,96 @@
+<title>巫师3 MOD控制</title>
+<hr><br><br>
+<div align='center'>
+<button onclick="new ActiveXObject('wscript.shell').Run('steam://rungameid/292030')"><hr>打开巫师3<hr></button>
+<button onclick="new ActiveXObject('wscript.shell').Run('MODS\\')"><hr>打开MOD<hr></button></div>
+<u><div align='center' id='_show'></u>
+</div>
+<script>
+hash=[[]]//'des',1,2,3
+var t=''
+fso = new ActiveXObject("Scripting.FileSystemObject")
+var f = fso.OpenTextFile("control.txt",1)
+while(!f.AtEndOfStream){
+	t=f.Readline()
+	if(t=='')hash[hash.length]=[]
+	else hash[hash.length-1].push(t);
+}
+f.close()
+//alert(hash)
+</script>
+
+<script>
+function c(n){
+	if(fso.FolderExists(hash[n][1])){//close
+		for(var i=1;i<hash[n].length;i++){
+			if(hash[n][i].charAt(0)=='*')continue;
+			var realName=hash[n][i].split('\\')[1] //!!!!!!!!!!!!!
+			rename(hash[n][i],'OO'+realName)
+		}
+	}else{
+		for(var i=1;i<hash[n].length;i++){
+			if(hash[n][i].charAt(0)=='*')continue;
+			var realName=hash[n][i].split('\\') //!!!!!!!!!!!!!
+			rename(realName[0]+'\\OO'+realName[1],realName[1])
+		}
+	}
+	location.reload();
+}
+function d(n){
+	if(!fso.FolderExists(hash[n][1])){alert('请先把MOD状态调整至“启用中”再进行删除操作！');return}
+	if(!confirm('确定删除MOD <'+hash[n][0]+'> 吗?'))return;
+	for(var i=1;i<hash[n].length;i++){
+		var fil=(hash[n][i].charAt(0)=='*'?hash[n][i].slice(1):hash[n][i])
+		del(fil)
+	}
+	/*
+	var tit=hash[n][0]
+	//创建新文件 删除旧文件 最后改名
+	var wt=fso.OpenTextFile('control_Temp',2,true,false)
+	var f = fso.OpenTextFile("control.txt",1)
+	while(!f.AtEndOfStream){
+		var t=f.Readline()
+		if(t==tit){
+			while((!f.AtEndOfStream)&&f.Readline()!=''){}
+		}else{
+			wt.WriteLine(t);
+		}
+	}
+	wt.close();
+	f.close();
+	fso.GetFile('control.txt').Delete();
+	//fso.GetFile('control_Temp').name='control.txt'
+	var f=fso.OpenTextFile('control_Temp',1)
+	var arr=[]
+	while(!f.AtEndOfStream)arr.push(f.Readline())
+	f.close()
+	var wt=fso.OpenTextFile('control.txt',2,true,false)
+	for(var i=0;i<arr.length-1;i++)wt.WriteLine(arr[i])
+	wt.close()
+	fso.GetFile('control_Temp').Delete()
+	arr=null;
+	*/new ActiveXObject('wscript.shell').Run('control.txt')
+	alert('完成');
+	location.reload()
+}
+function del(a){
+	fso.DeleteFolder(a);
+}
+function rename(a,b){
+	//if(/\*/.test(a))return;
+	var f=new ActiveXObject("Scripting.FileSystemObject").GetFolder(a)
+	//for(var e in f)alert(e)
+	f.name=b;
+	//alert('Done')
+}
+function show(){
+	//tr td 
+	var s='<table><caption>巫师3 MOD控制器</caption>',e=true
+	for(var i=0;i<hash.length;i++){
+		e=fso.FolderExists(hash[i][1])
+		s+='<tr><td><button onclick=d('+i+')>删除</button></td><td>'+hash[i][0]+'</td><td><button onclick=c('+i+')>'+(e?'<font color="green">启用中</font>':'<font color="red">停用中</font>')+'</button></td></tr>'
+	}
+	document.getElementById('_show').innerHTML=s+'</table>'
+}
+show()
+</script>
